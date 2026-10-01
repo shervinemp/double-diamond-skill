@@ -1,0 +1,10 @@
+# Claude Code local, per-machine state
+.claude/settings.local.json
+.claude/worktrees/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
