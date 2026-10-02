@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  validate-plugin:
+  checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,4 +14,14 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install pyyaml
-      - run: python scripts/validate.py
+      - name: Validate plugin, skill and agent files
+        run: python scripts/validate.py
+      - name: OpenCode agents are in sync with the Claude agents
+        run: python scripts/sync_opencode.py --check
+      - name: Installer smoke test
+        run: |
+          python scripts/install.py --claude-dir "$RUNNER_TEMP/c" --opencode-dir "$RUNNER_TEMP/o"
+          test -f "$RUNNER_TEMP/c/skills/double-diamond/SKILL.md"
+          test -f "$RUNNER_TEMP/o/agents/dd-judge.md"
+          test -f "$RUNNER_TEMP/o/commands/double-diamond.md"
+          python scripts/install.py --claude-dir "$RUNNER_TEMP/c" --opencode-dir "$RUNNER_TEMP/o" --uninstall

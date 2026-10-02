@@ -185,9 +185,13 @@ def check_skills() -> set[str]:
             err(f"{rel}: invalid effort {fm['effort']!r}")
         if len(body.splitlines()) > 500:
             warn(f"{rel}: over 500 lines; move detail into reference files")
-        for ref in re.findall(r"\$\{CLAUDE_SKILL_DIR\}/([\w./-]+)", body):
+        for ref in sorted(set(re.findall(r"`(references/[\w./-]+)`", body))):
             if not (skill_md.parent / ref).is_file():
                 err(f"{rel}: references missing file {ref}")
+        if "${CLAUDE_SKILL_DIR}" in body:
+            warn(f"{rel}: uses ${{CLAUDE_SKILL_DIR}}, which OpenCode does not substitute; use paths relative to the skill")
+        if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", str(fm.get("name", ""))) or len(str(fm.get("name", ""))) > 64:
+            err(f"{rel}: name must be lowercase kebab-case, at most 64 chars (OpenCode requirement)")
     return names
 
 
@@ -234,8 +238,38 @@ def check_skill_agent_consistency(skill_names: set[str], agent_names: set[str]) 
                 err(f"{skill_md.relative_to(ROOT)}: refers to subagent {agent!r}, which is not defined in agents/")
 
 
+def check_opencode() -> None:
+    agents = ROOT / "opencode" / "agents"
+    for md in sorted(agents.glob("*.md")) if agents.is_dir() else []:
+        rel = md.relative_to(ROOT)
+        parsed = frontmatter(md)
+        if parsed is None:
+            continue
+        fm, _ = parsed
+        if not fm.get("description"):
+            err(f"{rel}: description is required")
+        if fm.get("mode") != "subagent":
+            err(f"{rel}: mode must be 'subagent'")
+        perms = fm.get("permission") or {}
+        for tool in ("edit", "bash"):
+            if perms.get(tool) != "deny":
+                err(f"{rel}: subagent must be read-only (permission.{tool}: deny)")
+    cmd = ROOT / "opencode" / "commands" / "double-diamond.md"
+    if cmd.exists():
+        parsed = frontmatter(cmd)
+        if parsed:
+            fm, body = parsed
+            if not fm.get("description"):
+                err(f"{cmd.relative_to(ROOT)}: description is required")
+            if "$ARGUMENTS" not in body:
+                err(f"{cmd.relative_to(ROOT)}: body must pass $ARGUMENTS to the skill")
+    else:
+        err("opencode/commands/double-diamond.md: missing")
+
+
 def main() -> int:
     plugin_name = check_plugin()
+    check_opencode()
     check_marketplace(plugin_name)
     skills = check_skills()
     agents = check_agents()

@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 Request to plan: $ARGUMENTS
 
-(If that is empty, use the user's most recent request in this conversation.)
+(If that line still reads literally "\$ARGUMENTS" or is empty, your harness did not pass an argument: use the user's most recent request in this conversation.)
 
 You run a four-step pipeline: **triage → expand & ground → (diverge & compare) → contract**. The user sees questions and one final plan. Deliberation stays internal unless they ask for the audit trail.
 
@@ -23,14 +23,14 @@ If not, say in one line that it is clear enough to just do, skip the pipeline, a
 
 If you are running it, announce in one line which phases will run and whether subagents will be used (they cost extra), and that "skip" cuts straight to a plan.
 
-**Classify the task type**, then read the matching reference once before Phase 1. It holds that type's typical forks, extra baseline checks, lenses, and plan shape:
+**Classify the task type**, then read the matching reference once before Phase 1. It holds that type's typical forks, extra baseline checks, lenses, and plan shape. Paths are relative to this skill's base directory, which your harness shows when the skill loads:
 
 | Type | Read |
 |---|---|
-| Building, changing, migrating, or deploying software | `${CLAUDE_SKILL_DIR}/references/coding.md` |
-| Drafting or revising prose | `${CLAUDE_SKILL_DIR}/references/writing.md` |
-| "Should we", which approach, trade-offs, open research | `${CLAUDE_SKILL_DIR}/references/research-decision.md` |
-| Choosing a real-world vendor, service, product, place, or person | `${CLAUDE_SKILL_DIR}/references/recommendation.md` |
+| Building, changing, migrating, or deploying software | `references/coding.md` |
+| Drafting or revising prose | `references/writing.md` |
+| "Should we", which approach, trade-offs, open research | `references/research-decision.md` |
+| Choosing a real-world vendor, service, product, place, or person | `references/recommendation.md` |
 
 If none fits, proceed with this file alone.
 
@@ -65,7 +65,7 @@ Raise one of these with the user only when it **(a) conflicts with something the
 
      Failing any test means **default it** and log it in the ledger. The plan checkpoint in Phase 3 is a second safety net: a wrong default that costs only a one-line correction at plan time does not deserve a question now.
    - **Irrelevant** — drop it.
-4. **Ask rarely, and once.** Most requests should produce **0 or 1 questions**; 2 is uncommon and 3 is a hard cap. Send them in a single message (use AskUserQuestion if available). Each question gives:
+4. **Ask rarely, and once.** Most requests should produce **0 or 1 questions**; 2 is uncommon and 3 is a hard cap. Send them in a single message (use a structured question tool such as AskUserQuestion if your harness has one). Each question gives:
    - the options, with your recommended one marked,
    - one line on why it matters,
    - a **"you decide"** option that records an assumption.
@@ -80,7 +80,7 @@ Raise one of these with the user only when it **(a) conflicts with something the
 Run this only if **two or more viable approaches remain** and the choice is hard to reverse or the trade-off is not obvious. Otherwise pick the obvious approach, note in one line why, and go to Phase 3. (For recommendation tasks the reference replaces this phase.)
 
 1. **Derive 2 to 4 lenses from the forks in the Brief**, not from generic tiers like "MVP / enterprise / bleeding-edge". A lens is a real priority a reasonable person might pick (for example "fastest first result", "smallest change to the existing system", "lowest long-term upkeep"). Each lens must sacrifice something different. No strawmen: if you would never recommend it, do not include it.
-2. **Fan out.** Spawn one `dd-candidate` subagent per lens, all in a single message so they run in parallel. Give each the Brief verbatim and its lens. Do not share your own preference or the other lenses. *Naming:* if this was installed as the `double-diamond` plugin, the agents are scoped as `double-diamond:dd-candidate` and `double-diamond:dd-judge`; use whichever form your available agent types list.
+2. **Fan out.** Spawn one `dd-candidate` subagent per lens, all in a single message so they run in parallel. Give each the Brief verbatim and its lens. Do not share your own preference or the other lenses. *Naming:* if this was installed as the `double-diamond` plugin, the agents are scoped as `double-diamond:dd-candidate` and `double-diamond:dd-judge`; use whichever form your available agent types list. In OpenCode, spawn them with the Task tool using the subagent names `dd-candidate` and `dd-judge`.
 3. **Anonymize.** Strip lens names, give the candidates neutral letters, shuffle the order.
 4. **Judge once.** Spawn one `dd-judge` subagent with the Brief, the anonymized candidates, and a weighted rubric. Derive the weights from what the user said matters (success-criteria fit, risk and regret, effort and time, maintenance and reversibility), not from generic defaults. The universal baseline criteria are always part of the rubric, even if the user never mentioned them.
 5. **Prefer evidence to opinion.** If the top two are close, or confidence is low or medium, and a cheap empirical check exists (run a command, read a doc, a tiny spike), do it. If it is still a values trade-off the Brief does not settle, ask the user that one question.
