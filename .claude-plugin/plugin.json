@@ -1,0 +1,13 @@
+{
+  "name": "double-diamond",
+  "displayName": "Double Diamond",
+  "version": "0.2.0",
+  "description": "Expand-then-contract request handling: surfaces unstated requirements, asks only high-stakes questions, compares real alternatives with isolated subagents, and delivers one canonical plan.",
+  "author": {
+    "name": "shervinemp",
+    "url": "https://github.com/shervinemp"
+  },
+  "homepage": "https://github.com/shervinemp/double-diamond-skill",
+  "repository": "https://github.com/shervinemp/double-diamond-skill",
+  "keywords": ["planning", "agents", "subagents", "decision-making", "workflow"]
+}

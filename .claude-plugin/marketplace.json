@@ -1,0 +1,17 @@
+{
+  "name": "double-diamond",
+  "owner": {
+    "name": "shervinemp",
+    "url": "https://github.com/shervinemp"
+  },
+  "description": "The double-diamond planning skill and its isolated candidate and judge subagents.",
+  "plugins": [
+    {
+      "name": "double-diamond",
+      "source": ".",
+      "description": "Expand-then-contract request handling with a silent baseline of obvious requirements, rare high-stakes questions, and anonymized candidate comparison.",
+      "category": "workflow",
+      "tags": ["planning", "agents", "decision-making"]
+    }
+  ]
+}

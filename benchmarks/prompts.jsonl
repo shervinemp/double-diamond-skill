@@ -1,0 +1,13 @@
+# One JSON object per line. expect: "pipeline" (should run the full pipeline), "skip" (triage should bypass it), or "either".
+{"id": "ci-cd", "prompt": "Set up CI/CD for this project.", "expect": "pipeline", "kind": "ambiguous-engineering"}
+{"id": "multi-tenancy", "prompt": "We need to add multi-tenancy to our app.", "expect": "pipeline", "kind": "ambiguous-engineering"}
+{"id": "launch-announcement", "prompt": "Write a launch announcement for our new product, a pocket-sized label printer for makers.", "expect": "pipeline", "kind": "writing"}
+{"id": "build-vs-buy", "prompt": "Help me decide whether to build or buy an internal search tool for a 40-person company.", "expect": "pipeline", "kind": "decision"}
+{"id": "monolith-migration", "prompt": "Plan the migration from our monolith to services.", "expect": "pipeline", "kind": "ambiguous-engineering"}
+{"id": "printing-immigration", "prompt": "Where can I print and bind my immigration forms near Austin, Texas?", "expect": "pipeline", "kind": "recommendation"}
+{"id": "movers", "prompt": "Which moving company should I use for a cross-country move from Boston to Seattle?", "expect": "pipeline", "kind": "recommendation"}
+{"id": "contractor", "prompt": "Find me a contractor to redo my bathroom in Denver.", "expect": "pipeline", "kind": "recommendation"}
+{"id": "rename-variable", "prompt": "In this snippet, rename the variable x to count: `x = 0; x += 1; print(x)`", "expect": "skip", "kind": "clear-small"}
+{"id": "python-date", "prompt": "How do I format a date in Python?", "expect": "skip", "kind": "clear-small"}
+{"id": "readme-typo", "prompt": "Fix the typo in this heading: '# Instalation'", "expect": "skip", "kind": "clear-small"}
+{"id": "values-tradeoff", "prompt": "Should we prioritize shipping the redesign this quarter or fixing the reliability issues first?", "expect": "pipeline", "kind": "values-tradeoff"}

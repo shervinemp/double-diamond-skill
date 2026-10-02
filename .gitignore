@@ -2,6 +2,20 @@
 .claude/settings.local.json
 .claude/worktrees/
 
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/
+
+# Eval and run output
+results/
+orchestrator/runs/
+
 # OS / editor noise
 .DS_Store
 Thumbs.db
