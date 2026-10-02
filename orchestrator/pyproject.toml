@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "double-diamond"
+version = "0.2.0"
+description = "Headless expand-then-contract request pipeline: triage, ground, compare, contract."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "anthropic>=1.0",
+  "pydantic>=2.5",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+double-diamond = "double_diamond.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "tests"]
